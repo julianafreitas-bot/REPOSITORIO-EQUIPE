@@ -1,0 +1,3 @@
+Coloque aqui de 2 a 6 fotos nítidas do rosto da Dra. Juliana (jpg, png ou webp).
+Boas referências: rosto frontal ou 3/4, boa luz, sem óculos escuros, sem outras pessoas, sem texto por cima.
+O script usa as fotos em ordem alfabética (máximo 6). Já vieram 6 fotos selecionadas. A 00 é a referência principal (aparência atual, inclusive o nariz) e deve continuar sendo a primeira em ordem alfabética. Ao trocar fotos, prefira fotos atuais.

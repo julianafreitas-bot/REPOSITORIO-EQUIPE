@@ -1,0 +1,12 @@
+{
+  "name": "fotos-juliana-imagegen",
+  "version": "1.0.0",
+  "description": "Skill para gerar fotos profissionais da Dra. Juliana Freitas preservando a identidade facial (OpenAI Images)",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "sharp": "^0.33.5"
+  }
+}

@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa da Adequação Sanitária — RIP/MCS</title>
+<style>
+  /* Google Fonts (web only) */
+
+  :root {
+    --navy: #000000;
+    --navy-light: #1A1A1A;
+    --gold: #B09030;
+    --gold-light: #DDC65F;
+    --gold-bg: #F9F7E8;
+    --gold-rule: #D4C455;
+    --cream: #FAFAF7;
+    --white: #FFFFFF;
+    --text: #2C2C2C;
+    --text-sub: #5A5A5A;
+    --border: #E0D8C0;
+    --critica: #7D1A1A;
+    --alta: #6B4200;
+    --media: #1A3E6B;
+    --baixa: #DDC65F;
+    --fase1: #000000;
+    --fase2: #243545;
+    --fase3: #2D4058;
+    --fase4: #364B6B;
+    --fase5: #3F567E;
+    --fase6: #486191;
+    --fase7: #DDC65F;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    font-size: 10.5pt;
+    color: var(--text);
+    background: #EBEBEB;
+    line-height: 1.6;
+  }
+
+  .pagina {
+    background: var(--white);
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto 24px;
+    padding: 20mm 18mm;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+    position: relative;
+  }
+
+  /* ─── CAPA ─── */
+  .capa {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 257mm;
+    background: linear-gradient(160deg, #000000 0%, #000000 100%);
+    padding: 22mm 20mm;
+    color: var(--white);
+  }
+
+  .capa-logo { font-family: 'Inter', sans-serif; font-size: 9pt; font-weight: 600; letter-spacing: 3.5px; text-transform: uppercase; color: var(--gold-light); border-bottom: 1px solid rgba(201,168,92,0.35); padding-bottom: 14px; }
+  .capa-centro { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 30px 0; }
+  .capa-serie { font-size: 8pt; letter-spacing: 4px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 20px; font-weight: 500; }
+  .capa-titulo { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36pt; font-weight: 600; line-height: 1.15; color: var(--white); margin-bottom: 10px; }
+  .capa-linha-ouro { width: 64px; height: 2px; background: var(--gold); margin: 22px 0; }
+  .capa-subtitulo { font-size: 12pt; font-weight: 300; color: rgba(255,255,255,0.78); line-height: 1.7; max-width: 380px; }
+
+  .capa-fases {
+    display: flex;
+    gap: 0;
+    margin-top: 30px;
+    border: 1px solid rgba(201,168,92,0.3);
+    overflow: hidden;
+  }
+  .capa-fase-item {
+    flex: 1;
+    text-align: center;
+    padding: 10px 4px;
+    border-right: 1px solid rgba(201,168,92,0.2);
+    font-size: 7pt;
+    color: rgba(255,255,255,0.6);
+  }
+  .capa-fase-item:last-child { border-right: none; }
+  .capa-fase-num { font-family:'Cormorant Garamond',Georgia,serif; font-size:18pt; color:var(--gold-light); display:block; line-height:1; }
+
+  .capa-rodape { border-top: 1px solid rgba(201,168,92,0.3); padding-top: 18px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .capa-rodape-metodo { font-size: 8.5pt; color: rgba(255,255,255,0.55); }
+  .capa-rodape-metodo strong { display: block; color: var(--gold-light); font-size: 9pt; letter-spacing: 1.5px; margin-bottom: 4px; }
+  .capa-badge { background: rgba(168,130,58,0.2); border: 1px solid rgba(201,168,92,0.4); padding: 8px 16px; font-size: 8pt; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-light); font-weight: 600; }
+
+  /* ─── HEADER INTERNO ─── */
+  .header-interno { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--navy); padding-bottom: 12px; margin-bottom: 28px; }
+  .header-metodo { font-size: 7.5pt; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--navy); }
+  .header-doc { font-size: 7.5pt; color: var(--text-sub); letter-spacing: 1px; text-align: right; }
+
+  /* ─── TÍTULOS ─── */
+  h1.titulo-secao { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 26pt; font-weight: 600; color: var(--navy); line-height: 1.2; margin-bottom: 8px; }
+  h2.subtitulo-secao { font-size: 9pt; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 22px; }
+  .linha-ouro-pequena { width: 40px; height: 1.5px; background: var(--gold); margin: 10px 0 16px; }
+
+  /* ─── CARTÃO DE FASE ─── */
+  .fase-header {
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 0;
+    color: white;
+  }
+  .fase-num-grande { font-family:'Cormorant Garamond',Georgia,serif; font-size:42pt; font-weight:700; line-height:1; color:rgba(255,255,255,0.25); }
+  .fase-header-texto {}
+  .fase-label { font-size:7.5pt; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,0.65); margin-bottom:4px; }
+  .fase-titulo { font-family:'Cormorant Garamond',Georgia,serif; font-size:20pt; font-weight:600; color:white; line-height:1.1; }
+  .fase-duracao { font-size:8.5pt; color:rgba(255,255,255,0.7); margin-top:4px; }
+
+  .fase-objetivo { background:var(--gold-bg); border-left:3px solid var(--gold); padding:12px 16px; margin-bottom:16px; font-size:9.5pt; line-height:1.65; }
+  .fase-objetivo strong { display:block; font-size:8pt; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); margin-bottom:5px; }
+
+  /* ─── GRID METADADOS DA FASE ─── */
+  .meta-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0; border:1px solid var(--border); margin-bottom:16px; }
+  .meta-item { padding:10px 12px; border-right:1px solid var(--border); }
+  .meta-item:last-child { border-right:none; }
+  .meta-label { font-size:7pt; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-sub); margin-bottom:4px; font-weight:600; }
+  .meta-valor { font-size:9pt; font-weight:600; color:var(--navy); }
+
+  .badge { display:inline-block; padding:3px 7px; border-radius:2px; font-size:7pt; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; }
+  .badge-critica { background:var(--critica); color:white; }
+  .badge-alta { background:var(--alta); color:white; }
+  .badge-media { background:var(--media); color:white; }
+  .badge-baixa { background:var(--baixa); color:white; }
+  .badge-pendente { background:#888; color:white; }
+  .badge-andamento { background:#6B4200; color:white; }
+  .badge-concluido { background:#DDC65F; color:#000000; }
+
+  /* ─── TABELA CHECKLIST DA FASE ─── */
+  .tabela-fase { width:100%; border-collapse:collapse; font-size:8.8pt; margin-bottom:14px; }
+  .tabela-fase thead tr { background:var(--navy); color:white; }
+  .tabela-fase thead th { padding:8px 10px; text-align:left; font-size:7.5pt; font-weight:600; letter-spacing:1px; text-transform:uppercase; border:1px solid #3A4F6A; }
+  .tabela-fase tbody tr { border-bottom:1px solid var(--border); }
+  .tabela-fase tbody tr:nth-child(even) { background:#FAFAFA; }
+  .tabela-fase td { padding:8px 10px; border-left:1px solid var(--border); border-right:1px solid var(--border); vertical-align:top; line-height:1.5; }
+  .tabela-fase .td-dep { font-size:7.5pt; color:var(--text-sub); font-style:italic; }
+
+  .check-box { width:16px; height:16px; border:1.5px solid #BBBBBB; display:inline-block; vertical-align:middle; flex-shrink:0; }
+
+  /* ─── DEPENDÊNCIAS ─── */
+  .dep-tag { display:inline-block; background:var(--gold-bg); border:1px solid var(--gold-rule); padding:2px 7px; font-size:7pt; margin:2px 2px 0 0; color:var(--navy); font-weight:600; }
+
+  /* ─── CALENDÁRIO ANUAL ─── */
+  .cal-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:6px; margin:16px 0; }
+  .cal-mes { border:1px solid var(--border); overflow:hidden; }
+  .cal-mes-nome { background:var(--navy); color:white; text-align:center; padding:6px 4px; font-size:7.5pt; font-weight:600; letter-spacing:1px; text-transform:uppercase; }
+  .cal-mes-itens { padding:8px 8px; }
+  .cal-mes-item { font-size:7.5pt; color:var(--text); padding:3px 0; border-bottom:1px solid #F0F0F0; line-height:1.4; }
+  .cal-mes-item:last-child { border-bottom:none; }
+  .cal-mes-item.urgente { color:var(--critica); font-weight:600; }
+  .cal-mes-item.rotina { color:var(--media); }
+
+  /* ─── PAINEL DE ACOMPANHAMENTO ─── */
+  .painel-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; }
+
+  .painel-card { border:1px solid var(--border); overflow:hidden; }
+  .painel-card-header { background:var(--navy); color:white; padding:10px 14px; font-size:8pt; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; }
+  .painel-card-corpo { padding:14px; }
+
+  .progresso-item { margin-bottom:12px; }
+  .progresso-label { display:flex; justify-content:space-between; margin-bottom:5px; }
+  .progresso-nome { font-size:8.5pt; font-weight:600; color:var(--navy); }
+  .progresso-pct { font-size:8.5pt; color:var(--text-sub); }
+  .barra { height:8px; background:#EAEAEA; border-radius:4px; overflow:hidden; }
+  .barra-fill { height:100%; border-radius:4px; }
+  .barra-navy { background:var(--navy); }
+  .barra-gold { background:var(--gold); }
+
+  .etapa-item { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); }
+  .etapa-item:last-child { border-bottom:none; }
+  .etapa-check { width:18px; height:18px; border:2px solid var(--border); flex-shrink:0; }
+  .etapa-check.ok { background:var(--baixa); border-color:var(--baixa); display:flex; align-items:center; justify-content:center; }
+  .etapa-texto { font-size:8.5pt; color:var(--text); }
+
+  .pendencia-item { padding:9px 12px; border-left:3px solid var(--critica); background:#FDF5F5; margin-bottom:8px; }
+  .pendencia-item.alta { border-left-color:var(--alta); background:#FFF8EF; }
+  .pendencia-titulo { font-size:8.5pt; font-weight:600; color:var(--text); margin-bottom:3px; }
+  .pendencia-detalhe { font-size:8pt; color:var(--text-sub); line-height:1.5; }
+
+  /* ─── UPSELL ─── */
+  .pagina-upsell { background:linear-gradient(160deg,#000000 0%,#000000 100%); color:white; min-height:257mm; padding:22mm 20mm; display:flex; flex-direction:column; justify-content:space-between; }
+  .upsell-label { font-size:8pt; letter-spacing:3px; text-transform:uppercase; color:var(--gold-light); font-weight:600; margin-bottom:10px; }
+  .upsell-titulo { font-family:'Cormorant Garamond',Georgia,serif; font-size:28pt; font-weight:600; color:white; line-height:1.2; }
+
+  /* ─── MAPA VISUAL (ROADMAP) ─── */
+  .roadmap-container { margin:20px 0; }
+  .roadmap-item { display:flex; gap:0; margin-bottom:6px; position:relative; }
+  .roadmap-fase-num { width:48px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond',Georgia,serif; font-size:20pt; font-weight:700; color:white; }
+  .roadmap-fase-corpo { flex:1; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; }
+  .roadmap-fase-nome { font-weight:700; font-size:9.5pt; color:white; }
+  .roadmap-fase-desc { font-size:8pt; color:rgba(255,255,255,0.65); margin-top:3px; }
+  .roadmap-fase-prazo { font-size:8pt; background:rgba(255,255,255,0.12); padding:4px 10px; color:rgba(255,255,255,0.8); flex-shrink:0; }
+  .roadmap-seta { width:48px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:16pt; color:var(--gold-light); }
+
+  /* ─── NOTA RODAPÉ ─── */
+  .nota-rodape { position:absolute; bottom:14mm; left:18mm; right:18mm; border-top:1px solid var(--border); padding-top:8px; display:flex; justify-content:space-between; font-size:7pt; color:var(--text-sub); letter-spacing:0.5px; }
+
+  /* ─── UTILITÁRIOS ─── */
+  .mt8{margin-top:8px}.mt14{margin-top:14px}.mt20{margin-top:20px}.mb8{margin-bottom:8px}.mb14{margin-bottom:14px}.mb20{margin-bottom:20px}
+  .texto-corpo{font-size:9.5pt;line-height:1.75;color:var(--text)}
+  .texto-destaque{font-size:10.5pt;font-weight:500;color:var(--navy);line-height:1.7}
+  hr.divisor{border:none;border-top:1px solid var(--border);margin:20px 0}
+
+  @media print { body{background:white} .pagina{box-shadow:none;margin:0;padding:15mm 15mm 20mm;page-break-after:always;width:100%} }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     CAPA
+══════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="capa">
+    <div class="capa-logo"><img src="data:image/png;base64,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" alt="Método Clínica Segura" style="height:55px; width:auto; display:block; margin-bottom:8px;"></div>
+
+    <div class="capa-centro">
+      <div class="capa-serie">Roteiro de Implementação Progressiva &nbsp;·&nbsp; RIP/MCS — Edição 2026</div>
+      <h1 class="capa-titulo">Mapa da<br>Adequação<br>Sanitária</h1>
+      <div class="capa-linha-ouro"></div>
+      <p class="capa-subtitulo">Roteiro estruturado em 7 fases para transformar o diagnóstico de conformidade em implementação real, com controle de progresso, responsabilidades e prazos definidos.</p>
+
+      <div class="capa-fases">
+        <div class="capa-fase-item"><span class="capa-fase-num">1</span>Diagnóstico</div>
+        <div class="capa-fase-item"><span class="capa-fase-num">2</span>Documentação</div>
+        <div class="capa-fase-item"><span class="capa-fase-num">3</span>Estrutura</div>
+        <div class="capa-fase-item"><span class="capa-fase-num">4</span>Equipamentos</div>
+        <div class="capa-fase-item"><span class="capa-fase-num">5</span>POPs</div>
+        <div class="capa-fase-item"><span class="capa-fase-num">6</span>Treinamentos</div>
+        <div class="capa-fase-item"><span class="capa-fase-num">7</span>Auditoria</div>
+      </div>
+    </div>
+
+    <div class="capa-rodape">
+      <div class="capa-rodape-metodo">
+        <strong>Método Clínica Segura</strong>
+        Dra. Juliana Freitas &nbsp;·&nbsp; Direito Sanitário Aplicado
+      </div>
+      <div class="capa-badge">RIP/MCS-2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     APRESENTAÇÃO
+══════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="header-interno">
+    <div class="header-metodo">Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026</div>
+    <div class="header-doc">Mapa da Adequação Sanitária &nbsp;·&nbsp; Apresentação</div>
+  </div>
+
+  <h2 class="subtitulo-secao">Sobre este instrumento</h2>
+  <h1 class="titulo-secao">Da não conformidade<br>à adequação total.</h1>
+  <div class="linha-ouro-pequena"></div>
+
+  <p class="texto-destaque mt14 mb14">O Roteiro de Implementação Progressiva — RIP/MCS é a segunda etapa do Método Clínica Segura. Ele parte de onde o Protocolo de Auditoria Interna (PAI/MCS) terminou: com a lista de problemas identificados. Seu único objetivo é transformar essa lista em ação organizada.</p>
+
+  <p class="texto-corpo mb14">A maioria das donas de clínica que identifica os problemas sanitários fica paralisada diante de uma pergunta simples: por onde começar? A tentativa de resolver tudo ao mesmo tempo geralmente resulta em nada resolvido de verdade. A conformidade sanitária não é uma tarefa — é um sistema. E sistemas exigem sequência.</p>
+
+  <p class="texto-corpo mb20">Este instrumento organiza a jornada de adequação em 7 fases com dependências claras: cada fase tem pré-requisitos, e respeitar essa ordem evita retrabalho e garante que as correções se sustentem. Você também encontrará um painel de acompanhamento para monitorar o progresso e identificar pendências críticas antes que uma inspeção o faça.</p>
+
+  <hr class="divisor">
+
+  <div style="background:var(--navy);color:white;padding:18px 20px;margin-top:16px;">
+    <div style="font-size:8pt;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);margin-bottom:12px;">Os 7 Pilares da Conformidade Progressiva — MCS</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="border-left:2px solid rgba(201,168,92,0.5);padding-left:12px;">
+        <div style="color:var(--gold-light);font-size:8pt;font-weight:700;margin-bottom:3px;">FASE 1 — REVELAR</div>
+        <div style="font-size:8.5pt;color:rgba(255,255,255,0.7);">Diagnóstico e baseline de conformidade &nbsp;·&nbsp; 2 semanas</div>
+      </div>
+      <div style="border-left:2px solid rgba(201,168,92,0.5);padding-left:12px;">
+        <div style="color:var(--gold-light);font-size:8pt;font-weight:700;margin-bottom:3px;">FASE 2 — REGULARIZAR</div>
+        <div style="font-size:8.5pt;color:rgba(255,255,255,0.7);">Regularização documental e licenças &nbsp;·&nbsp; 30–45 dias</div>
+      </div>
+      <div style="border-left:2px solid rgba(201,168,92,0.5);padding-left:12px;">
+        <div style="color:var(--gold-light);font-size:8pt;font-weight:700;margin-bottom:3px;">FASE 3 — REESTRUTURAR</div>
+        <div style="font-size:8.5pt;color:rgba(255,255,255,0.7);">Adequação da infraestrutura física &nbsp;·&nbsp; 30–60 dias</div>
+      </div>
+      <div style="border-left:2px solid rgba(201,168,92,0.5);padding-left:12px;">
+        <div style="color:var(--gold-light);font-size:8pt;font-weight:700;margin-bottom:3px;">FASE 4 — REEQUIPAR</div>
+        <div style="font-size:8.5pt;color:rgba(255,255,255,0.7);">Equipamentos, calibrações e insumos &nbsp;·&nbsp; 15–30 dias</div>
+      </div>
+      <div style="border-left:2px solid rgba(201,168,92,0.5);padding-left:12px;">
+        <div style="color:var(--gold-light);font-size:8pt;font-weight:700;margin-bottom:3px;">FASE 5 — PADRONIZAR</div>
+        <div style="font-size:8.5pt;color:rgba(255,255,255,0.7);">POPs, protocolos e prontuários &nbsp;·&nbsp; 30–45 dias</div>
+      </div>
+      <div style="border-left:2px solid rgba(201,168,92,0.5);padding-left:12px;">
+        <div style="color:var(--gold-light);font-size:8pt;font-weight:700;margin-bottom:3px;">FASE 6 — CAPACITAR</div>
+        <div style="font-size:8.5pt;color:rgba(255,255,255,0.7);">Treinamentos obrigatórios e equipe &nbsp;·&nbsp; 30 dias</div>
+      </div>
+      <div style="border-left:2px solid rgba(201,168,92,0.5);padding-left:12px;grid-column:span 2;">
+        <div style="color:var(--gold-light);font-size:8pt;font-weight:700;margin-bottom:3px;">FASE 7 — MONITORAR</div>
+        <div style="font-size:8.5pt;color:rgba(255,255,255,0.7);">Auditoria interna recorrente e manutenção da conformidade &nbsp;·&nbsp; Contínuo</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nota-rodape">
+    <span>Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026 &nbsp;·&nbsp; Uso restrito e confidencial</span>
+    <span>2</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     VISÃO GERAL — ROADMAP VISUAL
+══════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="header-interno">
+    <div class="header-metodo">Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026</div>
+    <div class="header-doc">Mapa da Adequação Sanitária &nbsp;·&nbsp; Visão Geral</div>
+  </div>
+
+  <h2 class="subtitulo-secao">Roteiro estruturado de implementação</h2>
+  <h1 class="titulo-secao">Visão Geral das<br>7 Fases de Adequação.</h1>
+  <div class="linha-ouro-pequena"></div>
+
+  <p class="texto-corpo mt14 mb20">As 7 fases abaixo seguem uma sequência lógica e obrigatória. Nenhuma fase pode ser concluída com eficácia sem que suas dependências anteriores estejam resolvidas. Respeitar essa ordem é o que diferencia uma adequação real de uma adequação aparente.</p>
+
+  <div style="margin:16px 0;">
+    <div style="display:flex;gap:0;margin-bottom:5px;background:#000000;">
+      <div style="width:48px;flex-shrink:0;background:#000000;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',Georgia,serif;font-size:24pt;font-weight:700;color:rgba(255,255,255,0.2);padding:14px 0;">1</div>
+      <div style="flex:1;padding:14px 16px;background:#000000;">
+        <div style="font-size:7.5pt;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);margin-bottom:3px;">Fase 1 &nbsp;·&nbsp; REVELAR</div>
+        <div style="font-weight:700;font-size:11pt;color:white;margin-bottom:3px;">Diagnóstico de Conformidade</div>
+        <div style="font-size:8pt;color:rgba(255,255,255,0.6);">Aplicar o PAI/MCS &nbsp;·&nbsp; Calcular o IGeC &nbsp;·&nbsp; Identificar não conformidades</div>
+      </div>
+      <div style="background:rgba(168,130,58,0.2);padding:14px 16px;display:flex;align-items:center;font-size:8.5pt;color:var(--gold-light);font-weight:600;white-space:nowrap;">2 semanas</div>
+    </div>
+
+    <div style="display:flex;justify-content:center;height:20px;align-items:center;background:white;">
+      <div style="width:2px;height:20px;background:var(--gold);"></div>
+    </div>
+
+    <div style="display:flex;gap:0;margin-bottom:5px;background:#0D0D0D;">
+      <div style="width:48px;flex-shrink:0;background:#0D0D0D;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',Georgia,serif;font-size:24pt;font-weight:700;color:rgba(255,255,255,0.2);padding:14px 0;">2</div>
+      <div style="flex:1;padding:14px 16px;background:#0D0D0D;">
+        <div style="font-size:7.5pt;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);margin-bottom:3px;">Fase 2 &nbsp;·&nbsp; REGULARIZAR &nbsp;·&nbsp; Depende da Fase 1</div>
+        <div style="font-weight:700;font-size:11pt;color:white;margin-bottom:3px;">Regularização Documental</div>
+        <div style="font-size:8pt;color:rgba(255,255,255,0.6);">Alvarás, RT, PGRSS, memorial descritivo, registros, contratos</div>
+      </div>
+      <div style="background:rgba(168,130,58,0.2);padding:14px 16px;display:flex;align-items:center;font-size:8.5pt;color:var(--gold-light);font-weight:600;white-space:nowrap;">30–45 dias</div>
+    </div>
+
+    <div style="display:flex;justify-content:center;height:20px;align-items:center;background:white;">
+      <div style="width:2px;height:20px;background:var(--gold);"></div>
+    </div>
+
+    <div style="display:flex;gap:0;margin-bottom:5px;background:#141414;">
+      <div style="width:48px;flex-shrink:0;background:#141414;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',Georgia,serif;font-size:24pt;font-weight:700;color:rgba(255,255,255,0.2);padding:14px 0;">3</div>
+      <div style="flex:1;padding:14px 16px;background:#141414;">
+        <div style="font-size:7.5pt;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);margin-bottom:3px;">Fase 3 &nbsp;·&nbsp; REESTRUTURAR &nbsp;·&nbsp; Depende das Fases 1 e 2</div>
+        <div style="font-weight:700;font-size:11pt;color:white;margin-bottom:3px;">Adequação Estrutural</div>
+        <div style="font-size:8pt;color:rgba(255,255,255,0.6);">Infraestrutura física, fluxos, acabamentos, instalações hidráulicas</div>
+      </div>
+      <div style="background:rgba(168,130,58,0.2);padding:14px 16px;display:flex;align-items:center;font-size:8.5pt;color:var(--gold-light);font-weight:600;white-space:nowrap;">30–60 dias</div>
+    </div>
+
+    <div style="display:flex;justify-content:center;height:20px;align-items:center;background:white;">
+      <div style="width:2px;height:20px;background:var(--gold);"></div>
+    </div>
+
+    <div style="display:flex;gap:0;margin-bottom:5px;background:#1A1A1A;">
+      <div style="width:48px;flex-shrink:0;background:#1A1A1A;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',Georgia,serif;font-size:24pt;font-weight:700;color:rgba(255,255,255,0.2);padding:14px 0;">4</div>
+      <div style="flex:1;padding:14px 16px;background:#1A1A1A;">
+        <div style="font-size:7.5pt;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);margin-bottom:3px;">Fase 4 &nbsp;·&nbsp; REEQUIPAR &nbsp;·&nbsp; Pode ocorrer em paralelo com a Fase 3</div>
+        <div style="font-weight:700;font-size:11pt;color:white;margin-bottom:3px;">Equipamentos e Insumos</div>
+        <div style="font-size:8pt;color:rgba(255,255,255,0.6);">Autoclave, calibrações, controles, descarte e rastreabilidade</div>
+      </div>
+      <div style="background:rgba(168,130,58,0.2);padding:14px 16px;display:flex;align-items:center;font-size:8.5pt;color:var(--gold-light);font-weight:600;white-space:nowrap;">15–30 dias</div>
+    </div>
+
+    <div style="display:flex;justify-content:center;height:20px;align-items:center;background:white;">
+      <div style="width:2px;height:20px;background:var(--gold);"></div>
+    </div>
+
+    <div style="display:flex;gap:0;margin-bottom:5px;background:#212121;">
+      <div style="width:48px;flex-shrink:0;background:#212121;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',Georgia,serif;font-size:24pt;font-weight:700;color:rgba(255,255,255,0.2);padding:14px 0;">5</div>
+      <div style="flex:1;padding:14px 16px;background:#212121;">
+        <div style="font-size:7.5pt;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);margin-bottom:3px;">Fase 5 &nbsp;·&nbsp; PADRONIZAR &nbsp;·&nbsp; Depende das Fases 2, 3 e 4</div>
+        <div style="font-weight:700;font-size:11pt;color:white;margin-bottom:3px;">POPs, Protocolos e Prontuários</div>
+        <div style="font-size:8pt;color:rgba(255,255,255,0.6);">Procedimentos operacionais, TCLEs, biossegurança e gestão de dados</div>
+      </div>
+      <div style="background:rgba(168,130,58,0.2);padding:14px 16px;display:flex;align-items:center;font-size:8.5pt;color:var(--gold-light);font-weight:600;white-space:nowrap;">30–45 dias</div>
+    </div>
+
+    <div style="display:flex;justify-content:center;height:20px;align-items:center;background:white;">
+      <div style="width:2px;height:20px;background:var(--gold);"></div>
+    </div>
+
+    <div style="display:flex;gap:0;margin-bottom:5px;background:#2A2A2A;">
+      <div style="width:48px;flex-shrink:0;background:#2A2A2A;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',Georgia,serif;font-size:24pt;font-weight:700;color:rgba(255,255,255,0.2);padding:14px 0;">6</div>
+      <div style="flex:1;padding:14px 16px;background:#2A2A2A;">
+        <div style="font-size:7.5pt;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);margin-bottom:3px;">Fase 6 &nbsp;·&nbsp; CAPACITAR &nbsp;·&nbsp; Depende da Fase 5</div>
+        <div style="font-weight:700;font-size:11pt;color:white;margin-bottom:3px;">Treinamentos e Capacitações</div>
+        <div style="font-size:8pt;color:rgba(255,255,255,0.6);">Biossegurança, PGRSS, boas práticas, primeiros socorros e esterilização</div>
+      </div>
+      <div style="background:rgba(168,130,58,0.2);padding:14px 16px;display:flex;align-items:center;font-size:8.5pt;color:var(--gold-light);font-weight:600;white-space:nowrap;">30 dias</div>
+    </div>
+
+    <div style="display:flex;justify-content:center;height:20px;align-items:center;background:white;">
+      <div style="width:2px;height:20px;background:var(--gold);"></div>
+    </div>
+
+    <div style="display:flex;gap:0;background:#DDC65F;">
+      <div style="width:48px;flex-shrink:0;background:#DDC65F;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',Georgia,serif;font-size:24pt;font-weight:700;color:rgba(0,0,0,0.15);padding:14px 0;">7</div>
+      <div style="flex:1;padding:14px 16px;background:#DDC65F;color:#000000;">
+        <div style="font-size:7.5pt;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);margin-bottom:3px;">Fase 7 &nbsp;·&nbsp; MONITORAR &nbsp;·&nbsp; Depende das Fases 1 a 6</div>
+        <div style="font-weight:700;font-size:11pt;color:white;margin-bottom:3px;">Auditoria Interna e Manutenção da Conformidade</div>
+        <div style="font-size:8pt;color:rgba(255,255,255,0.6);">Ciclo contínuo de revisão, atualização documental e auditorias periódicas</div>
+      </div>
+      <div style="background:rgba(168,130,58,0.2);padding:14px 16px;display:flex;align-items:center;font-size:8.5pt;color:var(--gold-light);font-weight:600;white-space:nowrap;">Recorrente</div>
+    </div>
+  </div>
+
+  <div style="background:var(--gold-bg);border:1px solid var(--gold-rule);padding:12px 16px;margin-top:16px;">
+    <div style="font-size:8pt;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:7px;">Prazo estimado para conformidade total</div>
+    <p style="font-size:9pt;color:var(--text);line-height:1.6;">Do início da Fase 1 à conclusão da Fase 6: <strong>90 a 150 dias</strong>, dependendo do grau de inadequação identificado no diagnóstico. Clínicas com IGeC/MCS acima de 70% podem concluir em 60 a 90 dias. A Fase 7 é permanente e não tem data de encerramento.</p>
+  </div>
+
+  <div class="nota-rodape">
+    <span>Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026 &nbsp;·&nbsp; Uso restrito e confidencial</span>
+    <span>3</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FASE 1 — DIAGNÓSTICO
+══════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="header-interno">
+    <div class="header-metodo">Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026</div>
+    <div class="header-doc">Fase 1 &nbsp;·&nbsp; Diagnóstico</div>
+  </div>
+
+  <div class="fase-header" style="background:#000000;">
+    <div class="fase-num-grande">1</div>
+    <div class="fase-header-texto">
+      <div class="fase-label">Fase 1 de 7 &nbsp;·&nbsp; REVELAR</div>
+      <div class="fase-titulo">Diagnóstico de Conformidade</div>
+      <div class="fase-duracao">Duração estimada: 2 semanas &nbsp;·&nbsp; Sem pré-requisitos</div>
+    </div>
+  </div>
+
+  <div class="fase-objetivo mt14">
+    <strong>Objetivo da Fase</strong>
+    Estabelecer o baseline real da clínica: aplicar o PAI/MCS, calcular o IGeC e mapear todas as não conformidades com clareza. Sem um diagnóstico estruturado, qualquer ação posterior corre o risco de ser incompleta ou mal direcionada. Esta fase é a fundação de toda a jornada de adequação.
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-item">
+      <div class="meta-label">Responsável</div>
+      <div class="meta-valor">Gestora / RT</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Prazo</div>
+      <div class="meta-valor">14 dias</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Dependências</div>
+      <div class="meta-valor">Nenhuma</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Risco se ignorada</div>
+      <div class="meta-valor"><span class="badge badge-critica">CRÍTICO</span></div>
+    </div>
+  </div>
+
+  <table class="tabela-fase">
+    <thead>
+      <tr>
+        <th style="width:28px;">N°</th>
+        <th>Ação / Entregável</th>
+        <th style="width:80px;">Responsável</th>
+        <th style="width:70px;">Prazo</th>
+        <th style="width:80px;">Dependência</th>
+        <th style="width:70px;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="text-align:center;font-weight:700;">1.1</td>
+        <td>Aplicar o PAI/MCS — Protocolo de Auditoria Interna — percorrendo fisicamente todas as áreas da clínica e pontuando os 11 blocos.</td>
+        <td>Gestora / RT</td>
+        <td>Dias 1–3</td>
+        <td class="td-dep">—</td>
+        <td><span class="badge badge-pendente">PENDENTE</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;font-weight:700;">1.2</td>
+        <td>Calcular o IGeC/MCS e preencher o Consolidado de Pontuação com resultado por bloco e classificação geral.</td>
+        <td>Gestora</td>
+        <td>Dia 3</td>
+        <td class="td-dep">Depende de 1.1</td>
+        <td><span class="badge badge-pendente">PENDENTE</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;font-weight:700;">1.3</td>
+        <td>Listar todas as não conformidades por ordem de prioridade (CRÍTICA, ALTA, MÉDIA, BAIXA) no Plano de Ação Imediata.</td>
+        <td>Gestora</td>
+        <td>Dias 3–4</td>
+        <td class="td-dep">Depende de 1.2</td>
+        <td><span class="badge badge-pendente">PENDENTE</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;font-weight:700;">1.4</td>
+        <td>Fotodocumentar as não conformidades físicas identificadas (infraestrutura, equipamentos, armazenamento), criando evidência antes/depois.</td>
+        <td>Gestora / RT</td>
+        <td>Dias 4–5</td>
+        <td class="td-dep">Depende de 1.1</td>
+        <td><span class="badge badge-pendente">PENDENTE</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;font-weight:700;">1.5</td>
+        <td>Apresentar o resultado do diagnóstico ao RT e à equipe-chave, definindo os blocos prioritários para as próximas fases.</td>
+        <td>Gestora / RT</td>
+        <td>Dias 7–10</td>
+        <td class="td-dep">Depende de 1.2, 1.3</td>
+        <td><span class="badge badge-pendente">PENDENTE</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;font-weight:700;">1.6</td>
+        <td>Definir o orçamento e o cronograma geral de adequação, estimando recursos necessários para cada fase subsequente.</td>
+        <td>Gestora</td>
+        <td>Dias 10–14</td>
+        <td class="td-dep">Depende de 1.3, 1.5</td>
+        <td><span class="badge badge-pendente">PENDENTE</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="background:#F5F5F5;border:1px solid var(--border);padding:12px 16px;margin-top:6px;">
+    <div style="font-size:8pt;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-sub);margin-bottom:7px;">Entregáveis Desta Fase</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <span class="dep-tag">PAI/MCS preenchido</span>
+      <span class="dep-tag">IGeC calculado</span>
+      <span class="dep-tag">Classificação da clínica</span>
+      <span class="dep-tag">Lista de não conformidades priorizada</span>
+      <span class="dep-tag">Fotodocumentação</span>
+      <span class="dep-tag">Cronograma e orçamento de adequação</span>
+    </div>
+  </div>
+
+  <div class="nota-rodape">
+    <span>Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026 &nbsp;·&nbsp; Uso restrito e confidencial</span>
+    <span>4</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FASE 2 — REGULARIZAÇÃO DOCUMENTAL
+══════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="header-interno">
+    <div class="header-metodo">Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026</div>
+    <div class="header-doc">Fase 2 &nbsp;·&nbsp; Regularização Documental</div>
+  </div>
+
+  <div class="fase-header" style="background:#0D0D0D;">
+    <div class="fase-num-grande">2</div>
+    <div class="fase-header-texto">
+      <div class="fase-label">Fase 2 de 7 &nbsp;·&nbsp; REGULARIZAR</div>
+      <div class="fase-titulo">Regularização Documental</div>
+      <div class="fase-duracao">Duração estimada: 30 a 45 dias &nbsp;·&nbsp; Depende da Fase 1</div>
+    </div>
+  </div>
+
+  <div class="fase-objetivo mt14">
+    <strong>Objetivo da Fase</strong>
+    Resolver todas as pendências de documentação legal, licenças e registros que sustentam a operação da clínica. A regularização documental é a base de toda adequação — sem documentos corretos, nenhuma outra melhoria tem validade legal perante a Vigilância Sanitária. Esta fase requer a atuação prioritária de assessoria jurídico-sanitária.
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-item">
+      <div class="meta-label">Responsável</div>
+      <div class="meta-valor">Gestora + Assessoria Jurídica</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Prazo</div>
+      <div class="meta-valor">30–45 dias</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Dependência</div>
+      <div class="meta-valor"><span class="dep-tag">Fase 1</span></div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Risco se ignorada</div>
+      <div class="meta-valor"><span class="badge badge-critica">CRÍTICO</span></div>
+    </div>
+  </div>
+
+  <div style="background:var(--gold-bg);border:1px solid var(--gold-rule);padding:11px 16px;margin-bottom:14px;">
+    <div style="font-size:8pt;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Atenção — Lógica desta fase</div>
+    <p style="font-size:8.5pt;color:var(--text);line-height:1.65;">O requerimento do Alvará de Funcionamento junto à VISA é a <strong>última etapa do processo de regularização</strong> — ele só é protocolado quando toda a documentação estiver pronta e a clínica estiver fisicamente adequada e preparada para receber a visita de inspeção. Esta fase trata da documentação que será reunida e enviada em conjunto no momento do requerimento.</p>
+  </div>
+
+  <table class="tabela-fase">
+    <thead>
+      <tr>
+        <th style="width:28px;">N°</th>
+        <th>Ação / Entregável</th>
+        <th style="width:80px;">Responsável</th>
+        <th style="width:70px;">Prazo</th>
+        <th style="width:80px;">Dependência</th>
+        <th style="width:70px;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="text-align:center;font-weight:700;">2.1</td>
+        <td>Formalizar o Responsável Técnico junto ao conselho de classe e registrar sua designação no estabelecimento (ART/RRT e documento de designação).
+          <span class="base-legal" style="display:block;font-size:7.5pt;color:var(--text-sub);margin-top:3px;font-style:italic;">Necessário antes de qualquer protocolo junto à VISA.</span></td>
+        <td>RT + Gestora</td>
+        <td>Dias 1–10</td>
+        <td class="td-dep">Fase 1 concluída</td>
+        <td><span class="badge badge-pendente">PENDENTE</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;font-weight:700;">2.2</td>
+        <td>Elaborar o PGRSS — Plano de Gerenciamento de Resíduos de Serviços de Saúde. Pode ser elaborado pela própria assessoria jurídico-sanitária ou pela clínica, com base nas atividades exercidas. Compõe o pacote documental do requerimento.
+          <span class="base-legal" style="display:block;font-size:7.5pt;color:var(--text-sub);margin-top:3px;font-style:italic;">Base legal: RDC 222/2018. Não requer aprovação de órgão ambiental — é enviado diretamente para a VISA com o requerimento.</span></td>
+        <td>Assessoria / RT</td>
+        <td>Dias 5–20</td>
+        <td class="td-dep">2.1</td>
+        <td><span class="badge badge-pendente">PENDENTE</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;font-weight:700;">2.3</td>
+        <td>Elaborar o Memorial Descritivo da clínica: descrição das atividades, fluxos de circulação, ambientes, equipamentos e conformidade com a RDC 50/2002. Compõe o requerimento.</td>
+        <td>Assessoria / Arquiteto</td>
+        <td>Paralelo à Fase 3</td>
+        <td class="td-dep">Fase 3 aprovada</td>
+        <td><span class="badge badge-pendente">PENDENTE</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;font-weight:700;">2.4</td>
+        <td>Regularizar contratos obrigatórios que integram o requerimento: coleta de RSS, controle de pragas e serviço de higienização ambiental — com empresas licenciadas.</td>
+        <td>Gestora</td>
+        <td>Dias 10–30</td>
+        <td class="td-dep">PGRSS (2.2)</td>
+        <td><span class="badge badge-pendente">PENDENTE</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;font-weight:700;">2.5</td>
+        <td>Verificar e regularizar o Alvará do Corpo de Bombeiros (AVCB ou CLCB), necessário para o requerimento — exige que a estrutura física esteja adequada previamente.</td>
+        <td>Gestora</td>
+        <td>Após Fase 3</td>
+        <td class="td-dep">Fase 3 concluída</td>
+        <td><span class="badge badge-pendente">PENDENTE</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;font-weight:700;">2.6</td>
+        <td>Verificar registros ANVISA de todos os equipamentos e produtos utilizados na clínica; regularizar os que estejam com registro vencido ou ausente.</td>
+        <td>Gestora + Assessoria</td>
+        <td>Dias 10–40</td>
+        <td class="td-dep">Lista 1.3</td>
+        <td><span class="badge badge-pendente">PENDENTE</span></td>
+      </tr>
+      <tr>
+        <td style="text-align:center;font-weight:700;">2.7</td>
+        <td>Atualizar contrato social com CNAE correto para as atividades de saúde/estética exercidas, se houver incompatibilidade com a atividade real.</td>
+        <td>Gestora + Contador</td>
+        <td>Dias 10–35</td>
+        <td class="td-dep">Fase 1 concluída</td>
+        <td><span class="badge badge-pendente">PENDENTE</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="background:#000000;color:white;padding:12px 16px;margin-top:6px;">
+    <div style="font-size:8pt;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-light);margin-bottom:8px;">Pacote Completo do Requerimento — Montado ao Final das Fases 2 a 6</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <span style="background:rgba(201,168,92,0.2);border:1px solid rgba(201,168,92,0.35);padding:3px 9px;font-size:7.5pt;color:rgba(255,255,255,0.8);">Requerimento preenchido</span>
+      <span style="background:rgba(201,168,92,0.2);border:1px solid rgba(201,168,92,0.35);padding:3px 9px;font-size:7.5pt;color:rgba(255,255,255,0.8);">PGRSS</span>
+      <span style="background:rgba(201,168,92,0.2);border:1px solid rgba(201,168,92,0.35);padding:3px 9px;font-size:7.5pt;color:rgba(255,255,255,0.8);">Memorial Descritivo</span>
+      <span style="background:rgba(201,168,92,0.2);border:1px solid rgba(201,168,92,0.35);padding:3px 9px;font-size:7.5pt;color:rgba(255,255,255,0.8);">PBA aprovado</span>
+      <span style="background:rgba(201,168,92,0.2);border:1px solid rgba(201,168,92,0.35);padding:3px 9px;font-size:7.5pt;color:rgba(255,255,255,0.8);">POPs assinados pelo RT</span>
+      <span style="background:rgba(201,168,92,0.2);border:1px solid rgba(201,168,92,0.35);padding:3px 9px;font-size:7.5pt;color:rgba(255,255,255,0.8);">Plano de Segurança do Paciente</span>
+      <span style="background:rgba(201,168,92,0.2);border:1px solid rgba(201,168,92,0.35);padding:3px 9px;font-size:7.5pt;color:rgba(255,255,255,0.8);">Contrato coleta RSS</span>
+      <span style="background:rgba(201,168,92,0.2);border:1px solid rgba(201,168,92,0.35);padding:3px 9px;font-size:7.5pt;color:rgba(255,255,255,0.8);">Alvará Bombeiros</span>
+      <span style="background:rgba(201,168,92,0.2);border:1px solid rgba(201,168,92,0.35);padding:3px 9px;font-size:7.5pt;color:rgba(255,255,255,0.8);">Comprovantes de manutenção</span>
+      <span style="background:rgba(201,168,92,0.2);border:1px solid rgba(201,168,92,0.35);padding:3px 9px;font-size:7.5pt;color:rgba(255,255,255,0.8);">Documentação do RT</span>
+      <span style="background:rgba(201,168,92,0.2);border:1px solid rgba(201,168,92,0.35);padding:3px 9px;font-size:7.5pt;color:rgba(255,255,255,0.8);">Registros de treinamentos</span>
+    </div>
+    <p style="font-size:8pt;color:rgba(255,255,255,0.55);margin-top:10px;">Todo o pacote acima é entregue em uma única protocolo junto à VISA. Após o protocolo, aguarda-se a visita de inspeção da Vigilância Sanitária.</p>
+  </div>
+
+  <div class="nota-rodape">
+    <span>Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026 &nbsp;·&nbsp; Uso restrito e confidencial</span>
+    <span>5</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FASE 3 + 4
+══════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="header-interno">
+    <div class="header-metodo">Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026</div>
+    <div class="header-doc">Fases 3 e 4 &nbsp;·&nbsp; Estrutura e Equipamentos</div>
+  </div>
+
+  <div class="fase-header" style="background:#141414;">
+    <div class="fase-num-grande">3</div>
+    <div class="fase-header-texto">
+      <div class="fase-label">Fase 3 de 7 &nbsp;·&nbsp; REESTRUTURAR &nbsp;·&nbsp; Depende das Fases 1 e 2</div>
+      <div class="fase-titulo">Adequação da Infraestrutura Física</div>
+      <div class="fase-duracao">Duração estimada: 30 a 60 dias</div>
+    </div>
+  </div>
+
+  <div class="fase-objetivo mt14">
+    <strong>Objetivo da Fase</strong>
+    Corrigir as inadequações da estrutura física identificadas no diagnóstico: acabamentos, fluxos, instalações hidráulicas, pontos de higienização e segregação de ambientes. Esta fase exige, como pré-requisito absoluto, a aprovação do Projeto Básico Arquitetônico (PBA) pela VISA — a obra só começa com o projeto aprovado. Ao final, a clínica deve estar preparada para receber a visita de inspeção.
+  </div>
+
+  <div style="background:var(--critica);color:white;padding:11px 16px;margin-bottom:14px;">
+    <div style="font-size:8pt;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin-bottom:6px;">Pré-Requisito Obrigatório — Antes de qualquer obra</div>
+    <p style="font-size:8.5pt;line-height:1.65;">O <strong>Projeto Básico Arquitetônico (PBA)</strong> deve ser elaborado por arquiteto ou engenheiro habilitado, compatível com a RDC 50/2002, e submetido à aprovação da VISA antes do início de qualquer adequação física. Nenhuma obra ou reforma pode ser iniciada sem o PBA previamente aprovado — qualquer intervenção realizada sem aprovação pode resultar em embargo e necessidade de refazimento. O PBA aprovado também integra o pacote de requerimento do Alvará.</p>
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-item"><div class="meta-label">Responsável</div><div class="meta-valor">Gestora + Arquiteto / Engenheiro</div></div>
+    <div class="meta-item"><div class="meta-label">Prazo</div><div class="meta-valor">30–60 dias (após PBA aprovado)</div></div>
+    <div class="meta-item"><div class="meta-label">Dependência</div><div class="meta-valor"><span class="dep-tag">PBA aprovado</span> <span class="dep-tag">Fase 1</span></div></div>
+    <div class="meta-item"><div class="meta-label">Risco</div><div class="meta-valor"><span class="badge badge-critica">CRÍTICO</span></div></div>
+  </div>
+
+  <table class="tabela-fase">
+    <thead><tr><th style="width:28px;">N°</th><th>Ação / Entregável</th><th style="width:80px;">Responsável</th><th style="width:70px;">Prazo</th><th style="width:70px;">Status</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:center;font-weight:700;background:#FDF0F0;">3.0</td><td style="background:#FDF0F0;"><strong>Elaborar e submeter o PBA — Projeto Básico Arquitetônico —</strong> para análise e aprovação pela VISA, em conformidade com a RDC 50/2002. Pré-requisito de todas as ações desta fase.</td><td style="background:#FDF0F0;">Arquiteto habilitado</td><td style="background:#FDF0F0;">Antes da obra</td><td style="background:#FDF0F0;"><span class="badge badge-critica">CRÍTICO</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">3.1</td><td>Instalar pias (lavatórios) com torneira não manual nas salas de atendimento clínico e sala de injetáveis, conforme RDC 50/2002.</td><td>Engenheiro / Obras</td><td>Dias 1–20</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">3.2</td><td>Revisar e corrigir acabamentos: piso, paredes e teto de todas as salas de atendimento — substituir materiais não laváveis.</td><td>Engenheiro / Obras</td><td>Dias 1–30</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">3.3</td><td>Definir e sinalizar fluxo limpo/sujo na planta da clínica, com separação física ou funcional documentada no memorial.</td><td>RT + Arquiteto</td><td>Dias 5–15</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">3.4</td><td>Instalar ou adequar o DML (Depósito de Material de Limpeza) exclusivo, identificado e com prateleiras.</td><td>Gestora / Obras</td><td>Dias 5–20</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">3.5</td><td>Substituir cortinas de tecido poroso por cortinas laváveis ou divisórias de fácil limpeza em salas de atendimento.</td><td>Gestora</td><td>Dias 5–15</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">3.6</td><td>Instalar ralos escamoteáveis (com tampa) nas salas onde existem ralos abertos. Verificar e higienizar caixa d'água.</td><td>Engenheiro / Obras</td><td>Dias 5–30</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">3.7</td><td>Delimitar e organizar o local de esterilização/reprocessamento, separado das áreas de atendimento, com identificação visual.</td><td>RT + Gestora</td><td>Dias 10–30</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">3.8</td><td>Contratar serviço de manutenção preventiva do sistema de ar condicionado, com emissão de laudo técnico semestral.</td><td>Gestora</td><td>Dias 1–20</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+    </tbody>
+  </table>
+
+  <hr class="divisor" style="margin:18px 0 14px;">
+
+  <div class="fase-header" style="background:#1A1A1A;">
+    <div class="fase-num-grande">4</div>
+    <div class="fase-header-texto">
+      <div class="fase-label">Fase 4 de 7 &nbsp;·&nbsp; REEQUIPAR &nbsp;·&nbsp; Paralela à Fase 3</div>
+      <div class="fase-titulo">Equipamentos, Calibrações e Insumos</div>
+      <div class="fase-duracao">Duração estimada: 15 a 30 dias</div>
+    </div>
+  </div>
+
+  <div class="meta-grid mt14">
+    <div class="meta-item"><div class="meta-label">Responsável</div><div class="meta-valor">Gestora / RT</div></div>
+    <div class="meta-item"><div class="meta-label">Prazo</div><div class="meta-valor">15–30 dias</div></div>
+    <div class="meta-item"><div class="meta-label">Dependência</div><div class="meta-valor"><span class="dep-tag">Fase 1</span></div></div>
+    <div class="meta-item"><div class="meta-label">Risco</div><div class="meta-valor"><span class="badge badge-alta">ALTA</span></div></div>
+  </div>
+
+  <table class="tabela-fase">
+    <thead><tr><th style="width:28px;">N°</th><th>Ação / Entregável</th><th style="width:80px;">Responsável</th><th style="width:70px;">Prazo</th><th style="width:70px;">Status</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:center;font-weight:700;">4.1</td><td>Realizar manutenção preventiva da autoclave e emitir laudo de eficácia atualizado (controle biológico e químico).</td><td>Empresa habilitada</td><td>Dias 1–10</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">4.2</td><td>Implantar o livro de registro de esterilização com campos para data, ciclo, operador, carga e resultado dos indicadores.</td><td>RT</td><td>Dias 1–7</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">4.3</td><td>Enviar equipamentos de medição para calibração certificada (termômetros, manômetros); arquivar certificados com próxima data.</td><td>Gestora</td><td>Dias 1–15</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">4.4</td><td>Implantar controle de temperatura com registro diário em todos os refrigeradores de medicamentos e produtos termolábeis.</td><td>RT / Equipe</td><td>Dias 1–5</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">4.5</td><td>Realizar varredura do estoque: retirar produtos vencidos, sem registro ANVISA, sem etiqueta ou fora das condições de armazenamento.</td><td>RT / Gestora</td><td>Dias 1–7</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">4.6</td><td>Instalar coletores de perfurocortantes (Descarpack) suspensos nos locais de uso; verificar preenchimento máximo de 2/3.</td><td>Gestora</td><td>Dias 1–5</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">4.7</td><td>Compor e verificar o kit de primeiros socorros; repor itens vencidos ou ausentes e definir responsável pela manutenção mensal.</td><td>RT / Gestora</td><td>Dias 1–5</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="nota-rodape">
+    <span>Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026 &nbsp;·&nbsp; Uso restrito e confidencial</span>
+    <span>6</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FASE 5 — POPs E PROTOCOLOS
+══════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="header-interno">
+    <div class="header-metodo">Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026</div>
+    <div class="header-doc">Fase 5 &nbsp;·&nbsp; POPs, Protocolos e Prontuários</div>
+  </div>
+
+  <div class="fase-header" style="background:#212121;">
+    <div class="fase-num-grande">5</div>
+    <div class="fase-header-texto">
+      <div class="fase-label">Fase 5 de 7 &nbsp;·&nbsp; PADRONIZAR &nbsp;·&nbsp; Depende das Fases 2, 3 e 4</div>
+      <div class="fase-titulo">POPs, Protocolos e Prontuários</div>
+      <div class="fase-duracao">Duração estimada: 30 a 45 dias</div>
+    </div>
+  </div>
+
+  <div class="fase-objetivo mt14">
+    <strong>Objetivo da Fase</strong>
+    Elaborar, revisar e implantar todos os Procedimentos Operacionais Padrão obrigatórios, protocolos de segurança do paciente e o modelo de prontuário completo. Os POPs só são eficazes quando há uma estrutura física adequada (Fase 3) e equipamentos em ordem (Fase 4) para sustentá-los.
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-item"><div class="meta-label">Responsável</div><div class="meta-valor">RT + Assessoria Jurídica</div></div>
+    <div class="meta-item"><div class="meta-label">Prazo</div><div class="meta-valor">30–45 dias</div></div>
+    <div class="meta-item"><div class="meta-label">Dependência</div><div class="meta-valor"><span class="dep-tag">F2</span> <span class="dep-tag">F3</span> <span class="dep-tag">F4</span></div></div>
+    <div class="meta-item"><div class="meta-label">Risco</div><div class="meta-valor"><span class="badge badge-critica">CRÍTICO</span></div></div>
+  </div>
+
+  <table class="tabela-fase">
+    <thead><tr><th style="width:28px;">N°</th><th>Ação / Entregável</th><th style="width:80px;">Responsável</th><th style="width:70px;">Prazo</th><th style="width:70px;">Status</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:center;font-weight:700;">5.1</td><td>Elaborar ou revisar o POP de Limpeza e Desinfecção Ambiental — incluindo frequência, produtos homologados, diluição e responsável.</td><td>RT</td><td>Dias 1–10</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">5.2</td><td>Elaborar ou revisar o POP de Esterilização de Artigos — cobrindo pré-lavagem, lavagem, embalagem, processo e armazenamento pós-esterilização.</td><td>RT</td><td>Dias 1–10</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">5.3</td><td>Elaborar ou revisar o POP de Reprocessamento de Artigos Reutilizáveis, com classificação Spaulding e procedimento por categoria.</td><td>RT</td><td>Dias 5–15</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">5.4</td><td>Elaborar POPs de atendimento ao paciente para cada procedimento realizado na clínica, com etapas clínicas e biossegurança integrada.</td><td>RT + Especialistas</td><td>Dias 5–25</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">5.5</td><td>Elaborar POP de Manejo de Resíduos, coerente com o PGRSS, com segregação por grupo, embalagem e destinação.</td><td>RT</td><td>Dias 5–15</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">5.6</td><td>Elaborar Protocolo de Atendimento a Emergências Clínicas, com medicamentos de emergência, contato do SAMU e hospital de referência.</td><td>RT</td><td>Dias 5–15</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">5.7</td><td>Revisar e padronizar o modelo de prontuário: anamnese, TCLE por procedimento, registro fotográfico, evolução e rastreabilidade de insumos.</td><td>RT + Assessoria Jurídica</td><td>Dias 10–30</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">5.8</td><td>Implantar política de LGPD: aviso de privacidade, base legal para tratamento de dados de saúde, prazo de guarda e controle de acesso.</td><td>Assessoria Jurídica</td><td>Dias 10–35</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">5.9</td><td>Colher assinatura do RT em todos os POPs elaborados, com data de aprovação e prazo de próxima revisão registrados no rodapé de cada documento.</td><td>RT</td><td>Após 5.1 a 5.6</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">5.10</td><td>Disponibilizar os POPs nos locais de uso: imprimir, plastificar e afixar (ou disponibilizar em sistema digital acessível à equipe).</td><td>Gestora</td><td>Após 5.9</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+    </tbody>
+  </table>
+
+  <div style="background:#F5F5F5;border:1px solid var(--border);padding:12px 16px;margin-top:6px;">
+    <div style="font-size:8pt;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-sub);margin-bottom:7px;">Entregáveis Desta Fase</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <span class="dep-tag">POPs elaborados e assinados pelo RT</span>
+      <span class="dep-tag">Protocolos de emergência</span>
+      <span class="dep-tag">Prontuário padronizado</span>
+      <span class="dep-tag">TCLEs por procedimento</span>
+      <span class="dep-tag">Política de LGPD implantada</span>
+      <span class="dep-tag">Manual de Boas Práticas</span>
+    </div>
+  </div>
+
+  <div class="nota-rodape">
+    <span>Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026 &nbsp;·&nbsp; Uso restrito e confidencial</span>
+    <span>7</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FASE 6 + 7
+══════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="header-interno">
+    <div class="header-metodo">Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026</div>
+    <div class="header-doc">Fases 6 e 7 &nbsp;·&nbsp; Treinamentos e Auditoria Interna</div>
+  </div>
+
+  <div class="fase-header" style="background:#2A2A2A;">
+    <div class="fase-num-grande">6</div>
+    <div class="fase-header-texto">
+      <div class="fase-label">Fase 6 de 7 &nbsp;·&nbsp; CAPACITAR &nbsp;·&nbsp; Depende da Fase 5</div>
+      <div class="fase-titulo">Treinamentos e Capacitações</div>
+      <div class="fase-duracao">Duração estimada: 30 dias</div>
+    </div>
+  </div>
+
+  <div class="fase-objetivo mt14">
+    <strong>Objetivo da Fase</strong>
+    Capacitar formalmente toda a equipe nos temas obrigatórios, com registro documentado de cada treinamento. Os treinamentos só fazem sentido após a elaboração dos POPs — a equipe precisa ser treinada nos procedimentos já padronizados, não em procedimentos ainda a definir.
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-item"><div class="meta-label">Responsável</div><div class="meta-valor">RT + Gestora</div></div>
+    <div class="meta-item"><div class="meta-label">Prazo</div><div class="meta-valor">30 dias</div></div>
+    <div class="meta-item"><div class="meta-label">Dependência</div><div class="meta-valor"><span class="dep-tag">Fase 5</span></div></div>
+    <div class="meta-item"><div class="meta-label">Risco</div><div class="meta-valor"><span class="badge badge-alta">ALTA</span></div></div>
+  </div>
+
+  <table class="tabela-fase">
+    <thead><tr><th style="width:28px;">N°</th><th>Ação / Entregável</th><th style="width:80px;">Responsável</th><th style="width:70px;">Prazo</th><th style="width:70px;">Status</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:center;font-weight:700;">6.1</td><td>Realizar treinamento de Biossegurança com toda a equipe — conteúdo alinhado ao POP implantado, com lista de presença e avaliação.</td><td>RT</td><td>Dias 1–10</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">6.2</td><td>Realizar treinamento sobre o PGRSS e manejo de resíduos com toda a equipe, com lista de presença e comprovante arquivados.</td><td>RT / Empresa PGRSS</td><td>Dias 5–15</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">6.3</td><td>Realizar treinamento de Boas Práticas Sanitárias e uso correto dos equipamentos (autoclave, lavadora ultrassônica), com registro.</td><td>RT</td><td>Dias 5–15</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">6.4</td><td>Realizar ou comprovar treinamento de Primeiros Socorros para ao menos um colaborador por turno de atendimento.</td><td>Empresa habilitada</td><td>Dias 5–20</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">6.5</td><td>Verificar e atualizar carteiras de vacinação de todos os colaboradores. Documentar no prontuário funcional de cada colaborador.</td><td>Gestora / RH</td><td>Dias 1–15</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">6.6</td><td>Elaborar o Plano Anual de Capacitação para o ano seguinte, com cronograma de todos os treinamentos obrigatórios e datas previstas.</td><td>RT + Gestora</td><td>Dias 20–30</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+    </tbody>
+  </table>
+
+  <div style="border:2px solid var(--gold);padding:0;margin-top:18px;overflow:hidden;">
+    <div style="background:var(--gold);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:8pt;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--navy);margin-bottom:4px;">Etapa Final — Após conclusão das Fases 2 a 6</div>
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:16pt;font-weight:700;color:var(--navy);">Protocolo do Requerimento + Visita da VISA</div>
+      </div>
+      <div style="text-align:right;"><span class="badge" style="background:var(--navy);color:white;font-size:8pt;padding:6px 12px;">MARCO FINAL</span></div>
+    </div>
+    <div style="padding:14px 18px;">
+      <p style="font-size:9pt;color:var(--text);line-height:1.7;margin-bottom:12px;">Somente quando toda a documentação estiver reunida e a clínica estiver fisicamente pronta para ser inspecionada, o requerimento do Alvará de Funcionamento é protocolado junto à VISA. Tudo é entregue em uma única submissão — não há protocolo parcial.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div style="border-left:3px solid var(--gold);padding-left:12px;">
+          <div style="font-size:8pt;font-weight:700;color:var(--navy);margin-bottom:4px;">O que compõe o requerimento</div>
+          <div style="font-size:8pt;color:var(--text-sub);line-height:1.7;">Requerimento preenchido &nbsp;·&nbsp; PBA aprovado &nbsp;·&nbsp; Memorial Descritivo &nbsp;·&nbsp; PGRSS &nbsp;·&nbsp; POPs assinados pelo RT &nbsp;·&nbsp; Plano de Segurança do Paciente &nbsp;·&nbsp; Contrato de coleta de RSS &nbsp;·&nbsp; Alvará do Corpo de Bombeiros &nbsp;·&nbsp; Comprovantes de manutenção dos equipamentos &nbsp;·&nbsp; Documentação do RT &nbsp;·&nbsp; Registros de treinamentos</div>
+        </div>
+        <div style="border-left:3px solid var(--navy);padding-left:12px;">
+          <div style="font-size:8pt;font-weight:700;color:var(--navy);margin-bottom:4px;">O que acontece após o protocolo</div>
+          <div style="font-size:8pt;color:var(--text-sub);line-height:1.7;">A VISA analisa o requerimento e, em seguida, agenda a <strong>visita de inspeção</strong> ao estabelecimento. O fiscal verifica in loco se a clínica corresponde ao que foi declarado na documentação. A clínica deve estar operacionalmente pronta para receber a visita no momento do protocolo — não após.</div>
+        </div>
+      </div>
+      <div style="background:#000000;color:white;padding:10px 14px;font-size:8.5pt;line-height:1.65;">
+        <strong style="color:var(--gold-light);">Regra prática:</strong> se a clínica não está pronta para ser inspecionada hoje, não está pronta para protocolar o requerimento. O protocolo antecipado sem conformidade real resulta em indeferimento ou concessão de prazo compulsório, com nova inspeção e custo adicional.
+      </div>
+    </div>
+  </div>
+
+  <hr class="divisor" style="margin:18px 0 14px;">
+
+  <div class="fase-header" style="background:#DDC65F;color:#000000;">
+    <div class="fase-num-grande">7</div>
+    <div class="fase-header-texto">
+      <div class="fase-label">Fase 7 de 7 &nbsp;·&nbsp; MONITORAR &nbsp;·&nbsp; Depende das Fases 1 a 6 &nbsp;·&nbsp; RECORRENTE</div>
+      <div class="fase-titulo">Auditoria Interna e Manutenção da Conformidade</div>
+      <div class="fase-duracao">Atividade contínua — sem data de encerramento</div>
+    </div>
+  </div>
+
+  <div class="meta-grid mt14">
+    <div class="meta-item"><div class="meta-label">Responsável</div><div class="meta-valor">Gestora / RT</div></div>
+    <div class="meta-item"><div class="meta-label">Frequência</div><div class="meta-valor">Semestral (mínimo)</div></div>
+    <div class="meta-item"><div class="meta-label">Dependência</div><div class="meta-valor"><span class="dep-tag">Fases 1–6</span></div></div>
+    <div class="meta-item"><div class="meta-label">Risco se ignorada</div><div class="meta-valor"><span class="badge badge-critica">CRÍTICO</span></div></div>
+  </div>
+
+  <table class="tabela-fase">
+    <thead><tr><th style="width:28px;">N°</th><th>Ação Recorrente</th><th style="width:80px;">Responsável</th><th style="width:90px;">Frequência</th><th style="width:70px;">Status</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:center;font-weight:700;">7.1</td><td>Reaplicar o PAI/MCS completo, recalcular o IGeC e comparar com o resultado anterior — monitorando a evolução da conformidade.</td><td>Gestora / RT</td><td>Semestral</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">7.2</td><td>Revisar e atualizar todos os POPs vencidos ou que precisem de adequação a novas normativas sanitárias.</td><td>RT</td><td>Anual</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">7.3</td><td>Renovar contratos de RSS, manutenção de equipamentos, controle de pragas e climatização; arquivar novos comprovantes.</td><td>Gestora</td><td>Conforme vencimento</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">7.4</td><td>Verificar e renovar o Alvará de Funcionamento, certidão do RT e demais documentos com validade anual ou bienal.</td><td>Gestora</td><td>Anual</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">7.5</td><td>Realizar treinamentos obrigatórios conforme Plano Anual de Capacitação, com emissão de novos registros de presença.</td><td>RT</td><td>Conforme plano</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+      <tr><td style="text-align:center;font-weight:700;">7.6</td><td>Emitir o Relatório de Auditoria Interna com o resultado, evidências, ações corretivas e prazo de nova auditoria.</td><td>RT / Gestora</td><td>Semestral</td><td><span class="badge badge-pendente">PENDENTE</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="nota-rodape">
+    <span>Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026 &nbsp;·&nbsp; Uso restrito e confidencial</span>
+    <span>8</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CRONOGRAMA ANUAL DE REVISÃO
+══════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="header-interno">
+    <div class="header-metodo">Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026</div>
+    <div class="header-doc">Cronograma Anual de Revisão Documental</div>
+  </div>
+
+  <h2 class="subtitulo-secao">Calendário de manutenção da conformidade</h2>
+  <h1 class="titulo-secao">Cronograma Anual de<br>Revisão Documental.</h1>
+  <div class="linha-ouro-pequena"></div>
+
+  <p class="texto-corpo mt14 mb20">A conformidade sanitária não é um estado permanente — é o resultado de uma rotina de revisão. Os documentos e contratos têm prazos de validade. Os treinamentos têm frequência mínima exigida. O calendário abaixo organiza as obrigações recorrentes mês a mês, evitando que vencimentos passem despercebidos.</p>
+
+  <div class="cal-grid">
+    <div class="cal-mes">
+      <div class="cal-mes-nome">Janeiro</div>
+      <div class="cal-mes-itens">
+        <div class="cal-mes-item urgente">Verificar validade do Alvará VISA</div>
+        <div class="cal-mes-item rotina">Controle biológico autoclave</div>
+        <div class="cal-mes-item">Verificar validades de insumos/medicamentos</div>
+        <div class="cal-mes-item rotina">Registro de temperatura (diário)</div>
+      </div>
+    </div>
+    <div class="cal-mes">
+      <div class="cal-mes-nome">Fevereiro</div>
+      <div class="cal-mes-itens">
+        <div class="cal-mes-item">Verificar vencimento de extintores</div>
+        <div class="cal-mes-item rotina">Controle biológico autoclave</div>
+        <div class="cal-mes-item">ASO periódico dos colaboradores</div>
+        <div class="cal-mes-item">Verificar carteiras de vacinação</div>
+      </div>
+    </div>
+    <div class="cal-mes">
+      <div class="cal-mes-nome">Março</div>
+      <div class="cal-mes-itens">
+        <div class="cal-mes-item rotina">Manutenção preventiva climatização</div>
+        <div class="cal-mes-item rotina">Controle biológico autoclave</div>
+        <div class="cal-mes-item">Renovar contrato empresa RSS</div>
+        <div class="cal-mes-item">Revisão de POPs (1° ciclo anual)</div>
+      </div>
+    </div>
+    <div class="cal-mes">
+      <div class="cal-mes-nome">Abril</div>
+      <div class="cal-mes-itens">
+        <div class="cal-mes-item rotina">Controle biológico autoclave</div>
+        <div class="cal-mes-item">Treinamento biossegurança (1° semestre)</div>
+        <div class="cal-mes-item">Verificar certidão do RT</div>
+        <div class="cal-mes-item">Controle de qualidade da água</div>
+      </div>
+    </div>
+    <div class="cal-mes">
+      <div class="cal-mes-nome">Maio</div>
+      <div class="cal-mes-itens">
+        <div class="cal-mes-item rotina">Controle biológico autoclave</div>
+        <div class="cal-mes-item">Treinamento PGRSS</div>
+        <div class="cal-mes-item">Manutenção kit primeiros socorros</div>
+        <div class="cal-mes-item">Verificar MTRs arquivados</div>
+      </div>
+    </div>
+    <div class="cal-mes">
+      <div class="cal-mes-nome">Junho</div>
+      <div class="cal-mes-itens">
+        <div class="cal-mes-item urgente">Auditoria interna PAI/MCS (1°)</div>
+        <div class="cal-mes-item rotina">Manutenção preventiva climatização</div>
+        <div class="cal-mes-item rotina">Controle biológico autoclave</div>
+        <div class="cal-mes-item">Higienização caixa d'água</div>
+      </div>
+    </div>
+    <div class="cal-mes">
+      <div class="cal-mes-nome">Julho</div>
+      <div class="cal-mes-itens">
+        <div class="cal-mes-item rotina">Controle biológico autoclave</div>
+        <div class="cal-mes-item">Verificar validades de medicamentos</div>
+        <div class="cal-mes-item">Verificar certificados de calibração</div>
+        <div class="cal-mes-item">Controle pragas (se semestral)</div>
+      </div>
+    </div>
+    <div class="cal-mes">
+      <div class="cal-mes-nome">Agosto</div>
+      <div class="cal-mes-itens">
+        <div class="cal-mes-item rotina">Controle biológico autoclave</div>
+        <div class="cal-mes-item">Manutenção preventiva autoclave</div>
+        <div class="cal-mes-item">Verificar ASO dos colaboradores</div>
+        <div class="cal-mes-item">Revisão de POPs (2° ciclo anual)</div>
+      </div>
+    </div>
+    <div class="cal-mes">
+      <div class="cal-mes-nome">Setembro</div>
+      <div class="cal-mes-itens">
+        <div class="cal-mes-item rotina">Manutenção preventiva climatização</div>
+        <div class="cal-mes-item rotina">Controle biológico autoclave</div>
+        <div class="cal-mes-item">Treinamento boas práticas</div>
+        <div class="cal-mes-item">Controle de qualidade da água</div>
+      </div>
+    </div>
+    <div class="cal-mes">
+      <div class="cal-mes-nome">Outubro</div>
+      <div class="cal-mes-itens">
+        <div class="cal-mes-item rotina">Controle biológico autoclave</div>
+        <div class="cal-mes-item">Treinamento biossegurança (2° semestre)</div>
+        <div class="cal-mes-item">Atualizar vacinas dos colaboradores</div>
+        <div class="cal-mes-item">Verificar vencimento de extintores</div>
+      </div>
+    </div>
+    <div class="cal-mes">
+      <div class="cal-mes-nome">Novembro</div>
+      <div class="cal-mes-itens">
+        <div class="cal-mes-item rotina">Controle biológico autoclave</div>
+        <div class="cal-mes-item">Elaborar Plano Anual de Capacitação</div>
+        <div class="cal-mes-item">Renovar contratos de serviço</div>
+        <div class="cal-mes-item">Verificar certidão do RT</div>
+      </div>
+    </div>
+    <div class="cal-mes">
+      <div class="cal-mes-nome">Dezembro</div>
+      <div class="cal-mes-itens">
+        <div class="cal-mes-item urgente">Auditoria interna PAI/MCS (2°)</div>
+        <div class="cal-mes-item rotina">Manutenção preventiva climatização</div>
+        <div class="cal-mes-item rotina">Controle biológico autoclave</div>
+        <div class="cal-mes-item urgente">Iniciar renovação Alvará VISA</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:20px;margin-top:14px;font-size:8pt;">
+    <div style="display:flex;align-items:center;gap:8px;"><div style="width:14px;height:14px;background:#FDF5F5;border-left:3px solid var(--critica);"></div> <span>Ação de alta urgência / prazo crítico</span></div>
+    <div style="display:flex;align-items:center;gap:8px;"><div style="width:14px;height:14px;background:#EFF4FB;border-left:3px solid var(--media);"></div> <span>Rotina obrigatória recorrente</span></div>
+    <div style="display:flex;align-items:center;gap:8px;"><div style="width:14px;height:14px;background:#F5F5F5;border:1px solid #DDD;"></div> <span>Ação periódica de manutenção</span></div>
+  </div>
+
+  <div class="nota-rodape">
+    <span>Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026 &nbsp;·&nbsp; Uso restrito e confidencial</span>
+    <span>9</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAINEL DE ACOMPANHAMENTO
+══════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="header-interno">
+    <div class="header-metodo">Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026</div>
+    <div class="header-doc">Painel de Acompanhamento</div>
+  </div>
+
+  <h2 class="subtitulo-secao">Controle de progresso</h2>
+  <h1 class="titulo-secao">Painel de Acompanhamento<br>da Adequação.</h1>
+  <div class="linha-ouro-pequena"></div>
+
+  <p class="texto-corpo mt14 mb20">Atualize este painel a cada revisão do progresso da adequação. Use-o como referência para reuniões de acompanhamento com a equipe e como evidência do comprometimento da clínica em caso de inspeção durante o processo de regularização.</p>
+
+  <!-- PROGRESSO POR FASE -->
+  <div class="painel-card mb20">
+    <div class="painel-card-header">Percentual de Conclusão por Fase</div>
+    <div class="painel-card-corpo">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div>
+          <div class="progresso-item">
+            <div class="progresso-label"><span class="progresso-nome">Fase 1 — Diagnóstico</span><span class="progresso-pct">____%</span></div>
+            <div class="barra"><div class="barra-fill barra-navy" style="width:0%"></div></div>
+          </div>
+          <div class="progresso-item">
+            <div class="progresso-label"><span class="progresso-nome">Fase 2 — Regularização Documental</span><span class="progresso-pct">____%</span></div>
+            <div class="barra"><div class="barra-fill barra-navy" style="width:0%"></div></div>
+          </div>
+          <div class="progresso-item">
+            <div class="progresso-label"><span class="progresso-nome">Fase 3 — Adequação Estrutural</span><span class="progresso-pct">____%</span></div>
+            <div class="barra"><div class="barra-fill barra-navy" style="width:0%"></div></div>
+          </div>
+          <div class="progresso-item">
+            <div class="progresso-label"><span class="progresso-nome">Fase 4 — Equipamentos</span><span class="progresso-pct">____%</span></div>
+            <div class="barra"><div class="barra-fill barra-navy" style="width:0%"></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="progresso-item">
+            <div class="progresso-label"><span class="progresso-nome">Fase 5 — POPs e Protocolos</span><span class="progresso-pct">____%</span></div>
+            <div class="barra"><div class="barra-fill barra-navy" style="width:0%"></div></div>
+          </div>
+          <div class="progresso-item">
+            <div class="progresso-label"><span class="progresso-nome">Fase 6 — Treinamentos</span><span class="progresso-pct">____%</span></div>
+            <div class="barra"><div class="barra-fill barra-navy" style="width:0%"></div></div>
+          </div>
+          <div class="progresso-item">
+            <div class="progresso-label"><span class="progresso-nome">Fase 7 — Auditoria Interna</span><span class="progresso-pct">____%</span></div>
+            <div class="barra"><div class="barra-fill barra-navy" style="width:0%"></div></div>
+          </div>
+          <div class="progresso-item" style="padding-top:6px;border-top:2px solid var(--navy);">
+            <div class="progresso-label"><span class="progresso-nome" style="font-weight:700;color:var(--navy);">PROGRESSO GERAL DA ADEQUAÇÃO</span><span class="progresso-pct" style="font-weight:700;color:var(--navy);">____%</span></div>
+            <div class="barra" style="height:12px;"><div class="barra-fill barra-gold" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="painel-grid">
+    <!-- ETAPAS CONCLUÍDAS -->
+    <div class="painel-card">
+      <div class="painel-card-header" style="background:#DDC65F;color:#000000;">Etapas Concluídas</div>
+      <div class="painel-card-corpo">
+        <div class="etapa-item"><div class="etapa-check"></div><div class="etapa-texto">PAI/MCS aplicado e IGeC calculado</div></div>
+        <div class="etapa-item"><div class="etapa-check"></div><div class="etapa-texto">Classificação da clínica definida</div></div>
+        <div class="etapa-item"><div class="etapa-check"></div><div class="etapa-texto">RT formalizado junto à VISA</div></div>
+        <div class="etapa-item"><div class="etapa-check"></div><div class="etapa-texto">Alvará de Funcionamento obtido</div></div>
+        <div class="etapa-item"><div class="etapa-check"></div><div class="etapa-texto">PGRSS elaborado e aprovado</div></div>
+        <div class="etapa-item"><div class="etapa-check"></div><div class="etapa-texto">Infraestrutura física adequada</div></div>
+        <div class="etapa-item"><div class="etapa-check"></div><div class="etapa-texto">Autoclave com laudos de eficácia</div></div>
+        <div class="etapa-item"><div class="etapa-check"></div><div class="etapa-texto">POPs elaborados e assinados pelo RT</div></div>
+        <div class="etapa-item"><div class="etapa-check"></div><div class="etapa-texto">Prontuário padronizado implantado</div></div>
+        <div class="etapa-item"><div class="etapa-check"></div><div class="etapa-texto">Treinamentos obrigatórios documentados</div></div>
+        <div class="etapa-item"><div class="etapa-check"></div><div class="etapa-texto">1ª Auditoria Interna realizada</div></div>
+        <div class="etapa-item"><div class="etapa-check"></div><div class="etapa-texto">Plano Anual de Capacitação elaborado</div></div>
+      </div>
+    </div>
+
+    <!-- PENDÊNCIAS CRÍTICAS -->
+    <div class="painel-card">
+      <div class="painel-card-header" style="background:#7D1A1A;">Pendências Críticas</div>
+      <div class="painel-card-corpo">
+        <p style="font-size:8.5pt;color:var(--text-sub);margin-bottom:12px;line-height:1.5;">Registre abaixo as pendências mais urgentes identificadas na última auditoria interna:</p>
+        <div class="pendencia-item">
+          <div class="pendencia-titulo">&nbsp;</div>
+          <div class="pendencia-detalhe" style="border-bottom:1px solid #EEE;height:18px;"></div>
+        </div>
+        <div class="pendencia-item">
+          <div class="pendencia-titulo">&nbsp;</div>
+          <div class="pendencia-detalhe" style="border-bottom:1px solid #EEE;height:18px;"></div>
+        </div>
+        <div class="pendencia-item">
+          <div class="pendencia-titulo">&nbsp;</div>
+          <div class="pendencia-detalhe" style="border-bottom:1px solid #EEE;height:18px;"></div>
+        </div>
+        <div class="pendencia-item alta">
+          <div class="pendencia-titulo">&nbsp;</div>
+          <div class="pendencia-detalhe" style="border-bottom:1px solid #EEE;height:18px;"></div>
+        </div>
+        <div class="pendencia-item alta">
+          <div class="pendencia-titulo">&nbsp;</div>
+          <div class="pendencia-detalhe" style="border-bottom:1px solid #EEE;height:18px;"></div>
+        </div>
+        <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:10px;">
+          <div style="font-size:7.5pt;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-sub);margin-bottom:6px;">Última atualização deste painel</div>
+          <div style="border-bottom:1.5px solid var(--navy);height:22px;width:140px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nota-rodape">
+    <span>Método Clínica Segura &nbsp;·&nbsp; RIP/MCS-2026 &nbsp;·&nbsp; Uso restrito e confidencial</span>
+    <span>10</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     UPSELL — PASTA SANITÁRIA + SER CLÍNICA SEGURA
+══════════════════════════════════════════ -->
+<div class="pagina">
+  <div class="pagina-upsell">
+    <div style="border-bottom:1px solid rgba(201,168,92,0.3);padding-bottom:18px;margin-bottom:30px;">
+      <div class="upsell-label">Método Clínica Segura &nbsp;·&nbsp; O Que Vem Depois</div>
+      <h1 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:26pt;font-weight:600;color:white;line-height:1.2;">Você tem o mapa.<br>Você tem o plano.<br>Agora é hora de executar.</h1>
+    </div>
+
+    <div style="flex:1;">
+      <p style="font-size:10.5pt;color:rgba(255,255,255,0.82);line-height:1.8;margin-bottom:26px;max-width:520px;">
+        Com o Diagnóstico e o Mapa da Adequação Sanitária, você sabe exatamente onde sua clínica está e o que precisa ser feito. O desafio agora é um só: executar. E executar com precisão, usando os documentos certos, redigidos corretamente.
+      </p>
+
+      <div style="border:1px solid rgba(201,168,92,0.4);background:rgba(168,130,58,0.07);padding:24px;margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+          <div>
+            <div class="upsell-label" style="margin-bottom:6px;">Próximo Passo Recomendado</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:22pt;color:var(--gold-light);font-weight:600;">Pasta Sanitária</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:8pt;color:rgba(255,255,255,0.45);margin-bottom:3px;">Investimento</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:20pt;color:var(--gold-light);">R$ 247</div>
+          </div>
+        </div>
+        <p style="font-size:9.5pt;color:rgba(255,255,255,0.78);line-height:1.75;margin-bottom:14px;">A Pasta Sanitária reúne todos os documentos que sua clínica precisa, prontos para uso imediato: modelos de POPs, contratos de prestação de serviço, TCLEs por procedimento, políticas de LGPD, formulários de registro sanitário e protocolos de biossegurança — tudo elaborado por advogada especialista em Direito Sanitário e revisado para conformidade com a legislação vigente em 2026.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="font-size:8.5pt;color:rgba(255,255,255,0.65);padding-left:12px;border-left:2px solid rgba(201,168,92,0.4);">Modelos de POPs prontos para assinatura do RT</div>
+          <div style="font-size:8.5pt;color:rgba(255,255,255,0.65);padding-left:12px;border-left:2px solid rgba(201,168,92,0.4);">TCLEs para os principais procedimentos estéticos</div>
+          <div style="font-size:8.5pt;color:rgba(255,255,255,0.65);padding-left:12px;border-left:2px solid rgba(201,168,92,0.4);">Contratos de prestação de serviço e cláusulas sanitárias</div>
+          <div style="font-size:8.5pt;color:rgba(255,255,255,0.65);padding-left:12px;border-left:2px solid rgba(201,168,92,0.4);">Política de privacidade e LGPD para clínicas de saúde</div>
+          <div style="font-size:8.5pt;color:rgba(255,255,255,0.65);padding-left:12px;border-left:2px solid rgba(201,168,92,0.4);">Formulários de registro de esterilização e controles</div>
+          <div style="font-size:8.5pt;color:rgba(255,255,255,0.65);padding-left:12px;border-left:2px solid rgba(201,168,92,0.4);">Código de conduta e formulários de entrega de EPIs</div>
+        </div>
+      </div>
+
+      <div style="border:1px solid rgba(201,168,92,0.3);background:rgba(168,130,58,0.06);padding:22px 24px;margin-bottom:22px;">
+        <div style="font-size:7.5pt;letter-spacing:2.5px;text-transform:uppercase;color:rgba(201,168,92,0.8);margin-bottom:8px;">Para quem quer fazer isso uma vez — e fazer certo</div>
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:20pt;color:var(--gold-light);font-weight:600;margin-bottom:14px;">Ser Clínica Segura</div>
+        <p style="font-size:9.5pt;color:rgba(255,255,255,0.78);line-height:1.8;margin-bottom:14px;">Existe um ponto em que fazer sozinha passa a custar mais do que ter uma especialista ao lado. Não em dinheiro — em tempo, retrabalho e risco de ser autuada por um documento errado ou um processo incompleto no momento da inspeção.</p>
+        <p style="font-size:9.5pt;color:rgba(255,255,255,0.78);line-height:1.8;margin-bottom:16px;">O programa Ser Clínica Segura conduz todo o processo de regularização sanitária de forma personalizada: diagnóstico da sua realidade específica, elaboração de todos os documentos no formato exigido pela sua VISA local, acompanhamento das tratativas com a Vigilância Sanitária, suporte ao RT e assessoria jurídico-sanitária até a obtenção do Alvará. Você executa o que é da sua alçada. A especialista cuida do que é da dela.</p>
+        <div style="border-top:1px solid rgba(201,168,92,0.25);padding-top:14px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-size:8.5pt;color:rgba(255,255,255,0.6);">Vagas limitadas &nbsp;·&nbsp; Atendimento personalizado &nbsp;·&nbsp; Dra. Juliana Freitas</div>
+          <div style="background:rgba(201,168,92,0.2);border:1px solid rgba(201,168,92,0.45);padding:8px 18px;font-size:8.5pt;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-light);">Saiba mais</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid rgba(201,168,92,0.3);padding-top:18px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:8pt;color:rgba(255,255,255,0.45);letter-spacing:1px;">Dra. Juliana Freitas &nbsp;·&nbsp; Direito Sanitário Aplicado a Clínicas</div>
+      <div style="font-size:9pt;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);">Método Clínica Segura</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "clinica-segura-imagegen",
+  "version": "1.0.0",
+  "description": "Skill do Claude Code para gerar imagens de post da Clínica Segura via GPT Image 2 (OpenAI)",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "openai": "^4.68.0",
+    "dotenv": "^16.4.5"
+  }
+}
